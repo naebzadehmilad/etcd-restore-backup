@@ -1,0 +1,18 @@
+- name: Run etcd restore script on each node with its IP
+  hosts: etcd_nodes
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Show the IP that will be sent to the restore script
+      debug:
+        msg: "Running restore.sh on node {{ inventory_hostname }} with IP {{ ansible_host }}"
+
+    - name: Execute restore script with node IP parameter
+      command: /etc/etcd/restore.sh {{ ansible_host }}
+      register: restore_result
+
+    - name: Show restore output
+      debug:
+        var: restore_result.stdout
+

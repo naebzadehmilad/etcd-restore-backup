@@ -1,0 +1,31 @@
+---
+- name: Start etcd and kubelet on all nodes
+  hosts: all
+  become: yes
+  strategy: free
+  gather_facts: no
+  tasks:
+    - name: Check if etcd binary exists
+      shell: "whereis etcd | grep  '/'"
+      register: etcd_check
+      ignore_errors: yes
+
+    - name: Check if kubelet binary exists
+      shell: "whereis kubelet | grep  '/'"
+      register: kubelet_check
+      ignore_errors: yes
+
+    - name: Start etcd service
+      systemd:
+        name: etcd
+        state: started
+        enabled: yes
+      when: kubelet_check.rc == 0
+
+    - name: Start kubelet service
+      systemd:
+        name: kubelet
+        state: started
+        enabled: yes
+      when: etcd_check.rc == 0
+

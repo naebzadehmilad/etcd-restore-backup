@@ -1,0 +1,27 @@
+---
+- name: Check and install nerdctl, then stop kube control plane containers
+  hosts: k8s_master 
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Check if nerdctl is installed
+      command: nerdctl --version
+      register: nerdctl_check
+      ignore_errors: yes
+
+    - name: Install nerdctl if not installed (example for Debian/Ubuntu)
+      apt:
+        name: nerdctl
+        state: present
+        update_cache: yes
+      when: nerdctl_check.failed
+
+    - name: Stop kubelet
+      shell: systemctl stop kubelet
+      ignore_errors: yes
+
+    - name: Stop kube control plane containers using nerdctl
+      shell: |
+        nerdctl -n k8s.io stop $(nerdctl -n k8s.io ps | grep -E 'kube-(apiserver|scheduler|controller-manager)' | awk '{print $1}')
+      ignore_errors: yes

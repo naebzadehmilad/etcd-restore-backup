@@ -1,0 +1,12 @@
+---
+- name: Copy restore.sh script to /etc/etcd/
+  hosts: all
+  become: yes
+  strategy: free
+  tasks:
+    - name: Copy restore.sh to /etc/etcd/
+      copy:
+        src: ./restore.sh   
+        dest: /etc/etcd/restore.sh
+        mode: '0755'       
+

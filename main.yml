@@ -1,0 +1,6 @@
+---
+- import_playbook: tasks/copy-restore-sh.yml
+- import_playbook: tasks/stop-component-k8s.yaml
+- import_playbook: tasks/reset-factory-etcd.yaml
+- import_playbook: tasks/restore.yaml
+- import_playbook: tasks/cluster-start.yaml
